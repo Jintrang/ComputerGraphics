@@ -13,14 +13,12 @@ void init()
 	glOrtho(-320,320,-240,240,-1,1);	
 }
 
-void equationLine(int x1,int y1,int x2,int y2) {
-	b = (x1*y2-y1)/(x1-1);
-	a = (y1-y2)/(x2-x1);
-}
-	
+//Thuat toan ve duong thang bang phuong trinh duong thang	
 void LineBres(int x1,int y1,int x2,int y2)	
 {
-	equationLine(x1, y1, x2, y2);
+	b = (x1*y2-y1)/(x1-1);
+	a = (y1-y2)/(x2-x1);
+	
   	int x = x1;	
 	int y = y1;
 	
@@ -56,11 +54,106 @@ void LineBres(int x1,int y1,int x2,int y2)
 	
 }
 
+//Thuat toan DDA
+
+void DDA(int x1, int y1, int x2, int y2) {
+	a = x1 - x2;
+	b = y1 - y2; 
+	
+  	int x = x1;	
+	int y = y1;
+	
+	int m = max(abs(a), abs(b));
+	float e =  1/m;
+	
+	int diffX = e * a;
+	int diffY = e * b;
+	
+	  	glBegin(GL_POINTS);
+		glVertex2i(x,y);
+		while (x < x2)  
+		{
+			x+=diffX;
+			y+=diffY;
+	        glVertex2i(x,y);
+	        glVertex2i(x+1,y);
+	        glVertex2i(x,y+1);
+	        glVertex2i(x,y-1);
+	        glVertex2i(x-1,y);
+		}
+		glEnd();
+	
+	}
+	
+// Thuat toan Bresenham
+
+void Bresenham(int x1, int y1, int x2, int y2) {
+	int d = 2 * b + a;
+	
+  	int x = x1;	
+	int y = y1;
+	
+	  	glBegin(GL_POINTS);
+		glVertex2i(x,y);
+		while (x < x2)  
+		{
+			x++;
+			if(d > 0) {
+				glVertex2i(x,y);
+				if(d > 2*a) {
+					d = d - 2*a;
+					}
+				d = d + 2*b;
+				}
+	        glVertex2i(x,y);
+	        glVertex2i(x+1,y);
+	        glVertex2i(x,y+1);
+	        glVertex2i(x,y-1);
+	        glVertex2i(x-1,y);
+		}
+		glEnd();
+	}
+	
+	
+//Midpoint Line-Drawing Algorithm (Thuat toan diem giua)
+void MLD(int x1,int y1,int x2,int y2)	
+{
+	int dx = x2 - x1, dy = y2 - y1;
+	int d = 2*dy - dx;
+	
+	int pos = 2*dy;
+	int neg = 2*(dy-dx);
+	
+	int x = x1, y = y1;
+	glVertex2i(x,y);
+	
+	  	glBegin(GL_POINTS);
+		glVertex2i(x,y);
+		while (x < x2)  
+		{
+			if(d <= 0) {
+				d = d + pos;
+			} else {
+				d = d + neg;
+				y = y + 1;
+			}
+			x = x + 1;
+	        glVertex2i(x,y);
+	        glVertex2i(x+1,y);
+	        glVertex2i(x,y+1);
+	        glVertex2i(x,y-1);
+	        glVertex2i(x-1,y);
+		}
+		glEnd();
+	
+}
+
+	
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(1.0, 0.0, 0.0);
-	LineBres(10, 10, 200, 200);
+	MLD(10, 10, 200, 200);
 	glViewport(0,0,640,480);
 	glFlush();
 
